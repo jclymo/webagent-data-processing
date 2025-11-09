@@ -36,7 +36,7 @@ def argmax_less_than(search_list, value):
         return False
     
     i = 0
-    while i < len(search_list):
+    while i+1 < len(search_list):
         if search_list[i+1] >= value:
             return i
         i += 1
@@ -67,7 +67,7 @@ def postprocess_document(document):
         start_time = action[0].timestamp
         if i := argmax_less_than(html_times, start_time):
             combined_log.append(DOMObservation(html_log[i]))
-        
+
         combined_log.extend(action)
 
     return combined_log
@@ -81,9 +81,8 @@ def main():
         # Example: Get one event record by url 
         # TODO get all unprocessed records
         event_id = "some_event_id"
-        documents = mongo.get_by_url("https://huggingface.co/learn/llm-course/en/chapter5/4")
-
-
+        # documents = mongo.get_by_url("https://huggingface.co/learn/llm-course/en/chapter5/4")
+        documents = mongo.get_by_timestamp(1762444020)
         # process all events
         for document in documents: 
             trajectory = postprocess_document(document)
@@ -91,7 +90,8 @@ def main():
                 if isinstance(item, Action):
                     print(item.bg_action, item.timestamp)
                 else:
-                    print(item.observation, item.timtestamp)
+                    print(item.ax_tree, item.timestamp)
+                print("-----"*30)
 
     finally:
         # Always close connection when done

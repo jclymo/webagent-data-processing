@@ -58,7 +58,7 @@ class Fill(Action):
         self._set_text()
     
     def _set_text(self):
-        self.text = self.event["attributes"]["value"]
+        self.text = self.event["data"]
 
     def _set_time(self):
         super()._set_time()

@@ -1,0 +1,13 @@
+[project]
+name = "webagent-data-processing"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "browsergym>=0.14.2",
+    "bson>=0.5.10",
+    "dotenv>=0.9.9",
+    "gymnasium>=1.2.2",
+    "pymongo>=4.15.3",
+]

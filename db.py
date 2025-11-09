@@ -30,6 +30,12 @@ class MongoDB:
         collection = self.db[self.event_collection]
         return collection.find_one({"_id": id})
     
+    def get_by_timestamp(self, timestamp: float) -> Optional[Dict[str, Any]]:
+        collection = self.db[self.event_collection]
+        query = {"timestamp": {"$gt": "2025-10-06T00:00:00Z"}}
+        query = {"duration": 24}
+        return collection.find(query)#.sort("timestamp", 1)
+    
     def get_by_url(self, start_url: str) -> Optional[Dict[str, Any]]:
         collection = self.get_event_collection()
         return collection.find({"start_url": start_url})
