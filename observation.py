@@ -20,6 +20,7 @@ def filter_focusable_nodes(data):
     focusable_nodes = [
         node for node in data.get("nodes", []) if has_focusable_property(node)
     ]
+    # print('focusable_nodes length:', len(focusable_nodes))
     return {"nodes": focusable_nodes}
 
 
@@ -70,7 +71,8 @@ def generate_axtree(html_string):
         if not axtree:
             raise RuntimeError("Accessibility tree not found in observation")
         axtree = filter_focusable_nodes(axtree)
-        return axtree
+        html = flatten_dom_to_str(obs["dom_object"])
+        return axtree, html
     
     finally:
         env.close()
@@ -86,7 +88,9 @@ def generate_axtree(html_string):
 class DOMObservation:
     def __init__(self, htmlCapture):
         self.raw_obs = htmlCapture
-        self.ax_tree = generate_axtree(htmlCapture.get("html", ""))
+        [bg_axtree, bg_html] = generate_axtree(htmlCapture.get("html", ""))
+        self.bg_axtree = bg_axtree
+        self.bg_html = bg_html
         self._set_times()
 
     def _set_times(self):
@@ -99,8 +103,4 @@ class DOMObservation:
     def html(self):
         return self.raw_obs["html"]#[:500] # for demo / testing
 
-        # return self.raw_obs["html"]
-    
-    @property
-    def axtre(self):
-        return self.ax_tree    
+        # return self.raw_obs["html"] 

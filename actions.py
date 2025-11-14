@@ -50,7 +50,7 @@ class Action:
         self.video_timestamp = self.event["video_timestamp"]
 
     def _set_target(self):
-        self.bid = self.event["target"]["bid"]
+        self.data_bid = self.event["target"]["bid"]
 
 class Fill(Action):
     def __init__(self, event):
@@ -67,7 +67,12 @@ class Fill(Action):
         
     @property
     def bg_action(self):
-        return f"fill(bid='{self.bid}', text='{self.text}')"
+        return {
+            "action": "fill",
+            "data_bid": self.data_bid,
+            "text": self.text
+        }
+        # return f"fill(data_bid='{self.data_bid}', text='{self.text}')"
 
 class Click(Action):
     def __init__(self, event):
@@ -75,7 +80,11 @@ class Click(Action):
 
     @property
     def bg_action(self):
-        return f"click(bid='{self.bid}')"
+        return {
+            "action": "click",
+            "data_bid": self.data_bid,
+        }
+        # return f"click(data_bid='{self.data_bid}')"
     
 class Press(Action):
     def __init__(self, event):
@@ -83,7 +92,11 @@ class Press(Action):
    
     @property
     def bg_action(self):
-        return f"press(bid='{self.bid}', '')"
+        return {
+            "action": "press",
+            "data_bid": self.data_bid,
+        }
+        # return f"press(data_bid='{self.data_bid}', '')"
     
 class SelectOption(Action):
     def __init__(self, event):
@@ -95,4 +108,9 @@ class SelectOption(Action):
    
     @property
     def bg_action(self):
-        return f"select_option(bid='{self.bid}', option='{self.option}')"
+        return {
+            "action": "select_option",
+            "data_bid": self.data_bid,
+            "option": self.option
+        }
+        # return f"select_option(data_bid='{self.data_bid}', option='{self.option}')"

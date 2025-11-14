@@ -3,6 +3,8 @@ from db import MongoDB
 from dotenv import load_dotenv
 from actions import event_to_action, Action
 from observation import DOMObservation
+import json
+from bs4 import BeautifulSoup
 
 # Load environment variables (optional if already loaded in db.py)
 load_dotenv()
@@ -31,46 +33,56 @@ def combine_input_events(event_log):
         new_event_log.append(event)
     return new_event_log           
 
-def argmax_less_than(search_list, value):
-    if len(search_list) == 0 or search_list[0] >= value:
-        return False
-    
-    i = 0
-    while i+1 < len(search_list):
-        if search_list[i+1] >= value:
-            return i
-        i += 1
-    
-    # final element is best match
-    return len(search_list) - 1
+def pair_event_obs(events, observations):
+    ans = []
+    i = j = 0
+    while i < len(events) and j < len(observations):
+        if observations[j]["timestamp"] < events[i]["timestamp"]:
+            # Check if they are consecutive with no timestamp in between
+            # meaning: next timestamp among (obs[j+1], events[i-1]) must not lie between
+            prev_event = events[i-1] if i > 0 else None
+            next_obs = observations[j+1] if j+1 < len(observations) else None
+            
+            # Condition: no timestamp between obs[j] and events[i]
+            valid = True
+            
+            if next_obs is not None and observations[j]["timestamp"] < next_obs["timestamp"] < events[i]["timestamp"]:
+                valid = False
+            if prev_event is not None and observations[j]["timestamp"] < prev_event["timestamp"] < events[i]["timestamp"]:
+                valid = False
+            
+            if valid:
+                ans.append([observations[j], events[i]])
+                j += 1
+                i += 1
+            else:
+                j += 1
+        else:
+            i += 1
+    return ans
 
 def postprocess_document(document):
     # separate html and events
     html_log, event_log = split_observation_and_event_logs(document['data'])
     html_log.sort(key = lambda x: x["timestamp"])
     event_log.sort(key = lambda x: x["timestamp"])
-    html_times = [capture["timestamp"] for capture in html_log]
 
     # reduce event log to key events only
     event_log = combine_input_events(event_log)
     
     # map events to actions
-    # recombine, interleaving observations and actions
-    combined_log = []
-    for event in event_log:
+    pairs = []
+    result = pair_event_obs(event_log, html_log)
+    for obs, event in result:
         action = event_to_action(event)
         if not action:
+            # print("No action for event:", obs["timestamp"], event["timestamp"])
+            # print(event["type"])
             continue
-        
         if not isinstance(action, list):
             action = [action]
-        start_time = action[0].timestamp
-        if i := argmax_less_than(html_times, start_time):
-            combined_log.append(DOMObservation(html_log[i]))
-
-        combined_log.extend(action)
-
-    return combined_log
+        pairs.append([DOMObservation(obs), action])
+    return pairs
 
 def main():
     # Initialize database connection
@@ -78,20 +90,37 @@ def main():
     documents = []
     
     try:
-        # Example: Get one event record by url 
-        # TODO get all unprocessed records
-        event_id = "some_event_id"
-        # documents = mongo.get_by_url("https://huggingface.co/learn/llm-course/en/chapter5/4")
-        documents = mongo.get_by_timestamp(1762444020)
+        documents = mongo.get_latest()
+        # processed = mongo.get_post_process_by_taskid(documents["_id"])
+        # if (processed):
+        #     print("Already processed")
+        #     return
         # process all events
-        for document in documents: 
+        for document in [documents]: 
             trajectory = postprocess_document(document)
-            for item in trajectory:
-                if isinstance(item, Action):
-                    print(item.bg_action, item.timestamp)
-                else:
-                    print(item.ax_tree, item.timestamp)
-                print("-----"*30)
+            
+            #  construct training data
+            payload = []
+            for idx, (obs, actions) in enumerate(trajectory):
+                # print('obs: ',obs.timestamp, 'event: ',actions[0].timestamp)
+                data_bids = [action.bg_action.get("data_bid", "") for action in actions]
+                print('data_bids: ', data_bids)
+                soup = BeautifulSoup(obs.bg_html, "html.parser")
+                elems = [soup.find(attrs={"data-bid": data_bid}) for data_bid in data_bids]
+                print('elems: ', elems)
+                # print(elems[0].attrs["bid"])
+                data = {
+                    "step": idx + 1,
+                    "task_description": document.get("task_description", ""),
+                    "bid": [elem.attrs["bid"] for elem in elems],
+                    "action": [{k: v for k, v in action.bg_action.items() if k != "data_bid"} for action in actions],
+                    "action": [action.bg_action["action"] for action in actions],
+                    "video_timestamp": [action.video_timestamp for action in actions],
+                    "axtree": obs.bg_axtree,
+                    "raw_data_id": str(document["_id"])
+                }
+                payload.append(data)
+            mongo.insert_post_process(payload)
 
     finally:
         # Always close connection when done
