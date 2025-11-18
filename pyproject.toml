@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "boto3>=1.40.74",
     "browsergym>=0.14.2",
     "bson>=0.5.10",
     "dotenv>=0.9.9",

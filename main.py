@@ -5,6 +5,8 @@ from actions import event_to_action, Action
 from observation import DOMObservation
 import json
 from bs4 import BeautifulSoup
+from s3 import S3Handler
+from urllib.parse import urlparse
 
 # Load environment variables (optional if already loaded in db.py)
 load_dotenv()
@@ -73,6 +75,7 @@ def postprocess_document(document):
     # map events to actions
     pairs = []
     result = pair_event_obs(event_log, html_log)
+    s3 = S3Handler()
     for obs, event in result:
         action = event_to_action(event)
         if not action:
@@ -81,6 +84,15 @@ def postprocess_document(document):
             continue
         if not isinstance(action, list):
             action = [action]
+        
+        html_url = obs.get("html_file_url", "")
+        if html_url != "":
+            parsed = urlparse(html_url)
+            s3_object_key = parsed.path.lstrip("/")
+            file_path = s3.download_file(s3_object_key)
+            with open(file_path, "r") as f:
+                html_content = f.read()
+                obs["html"] = html_content
         pairs.append([DOMObservation(obs), action])
     return pairs
 
@@ -96,7 +108,7 @@ def main():
         #     print("Already processed")
         #     return
         # process all events
-        for document in [documents]: 
+        for document in documents: 
             trajectory = postprocess_document(document)
             
             #  construct training data
@@ -107,8 +119,9 @@ def main():
                 print('data_bids: ', data_bids)
                 soup = BeautifulSoup(obs.bg_html, "html.parser")
                 elems = [soup.find(attrs={"data-bid": data_bid}) for data_bid in data_bids]
-                print('elems: ', elems)
-                # print(elems[0].attrs["bid"])
+                if not elems or any(elem is None for elem in elems):
+                    print(f"Skipping step {idx} due to missing elements for data_bids: {data_bids}")
+                    continue
                 data = {
                     "step": idx + 1,
                     "task_description": document.get("task_description", ""),
@@ -120,7 +133,9 @@ def main():
                     "raw_data_id": str(document["_id"])
                 }
                 payload.append(data)
-            mongo.insert_post_process(payload)
+            if len(payload) > 0:
+                print(f"Inserting {len(payload)} processed steps for document ID {document['_id']}")
+                mongo.insert_post_process(payload)
 
     finally:
         # Always close connection when done

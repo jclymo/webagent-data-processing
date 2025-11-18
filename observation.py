@@ -1,4 +1,3 @@
-from browsergym.utils.obs import flatten_dom_to_str
 import gymnasium as gym
 import browsergym.core
 from browsergym.utils.obs import flatten_dom_to_str, flatten_axtree_to_str
