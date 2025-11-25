@@ -127,7 +127,6 @@ def main():
                     "task_description": document.get("task_description", ""),
                     "bid": [elem.attrs["bid"] for elem in elems],
                     "action": [{k: v for k, v in action.bg_action.items() if k != "data_bid"} for action in actions],
-                    "action": [action.bg_action["action"] for action in actions],
                     "video_timestamp": [action.video_timestamp for action in actions],
                     "axtree": obs.bg_axtree,
                     "raw_data_id": str(document["_id"])
