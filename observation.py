@@ -90,6 +90,7 @@ class DOMObservation:
         [bg_axtree, bg_html] = generate_axtree(htmlCapture.get("html", ""))
         self.bg_axtree = bg_axtree
         self.bg_html = bg_html
+        self.html_url = htmlCapture.get("url")
         self._set_times()
 
     def _set_times(self):

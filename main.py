@@ -43,10 +43,10 @@ def combine_and_map_events(event_log):
         if events is None:
             continue
         tagName = events[0]["target"].get("tag","").lower()
-        if tagName == "input":
+        if tagName in ["input","textarea"]:
             data = ""
             for e in events:
-                if e['type'] == 'input':
+                if e['type'] in 'input':
                     last_event = e
                     data += e.get('data','')
             if (data == ""):
@@ -85,12 +85,7 @@ def combine_input_events(event_log):
         new_event_log.append(event)
     return new_event_log           
 
-def pair_event_obs(events, observations):
-    print("Pairing", len(events), "events with", len(observations), "observations")
-    # for e in events:
-    #     print("Type: ", e["type"], " bid: ", e["target"]["bid"], " tag: ", e["target"]["tag"].lower(), " value: ", e["target"].get("value"), " data: ", e.get("data"), " Timestamp:", e["timestamp"])
-    # for o in observations:
-    #     print("Obs Timestamp:", o["timestamp"], " URL:", o.get("html_file_url", "N/A"))
+def pair_immediate_before(events, observations):
     ans = []
     i = j = 0
     while i < len(events) and j < len(observations):
@@ -117,6 +112,25 @@ def pair_event_obs(events, observations):
         else:
             i += 1
     return ans
+
+def pair_closest_before(events, observations):
+    ans = []
+    j = 0
+    for event in events:
+        while j+1 < len(observations) and observations[j+1]["timestamp"] < event["timestamp"]:
+            j += 1
+        ans.append([observations[j], event])
+    return ans
+
+def pair_event_obs(events, observations):
+    print("Pairing", len(events), "events with", len(observations), "observations")
+    # for e in events:
+    #     print("Type: ", e["type"], " bid: ", e["target"]["bid"], " tag: ", e["target"]["tag"].lower(), " value: ", e["target"].get("value"), " data: ", e.get("data"), " Timestamp:", e["timestamp"])
+    # for o in observations:
+    #     print("Obs Timestamp:", o["timestamp"], " URL:", o.get("html_file_url", "N/A"))
+    # return pair_immediate_before(events, observations)
+    return pair_closest_before(events, observations)
+
 
 def postprocess_document(document):
     # separate html and events
@@ -147,6 +161,7 @@ def postprocess_document(document):
             with open(file_path, "r") as f:
                 html_content = f.read()
                 obs["html"] = html_content
+                obs["url"] = html_url
         pairs.append([DOMObservation(obs), action])
     return pairs
 
@@ -165,7 +180,7 @@ def main():
 
         for document in documents: 
             trajectory = postprocess_document(document)
-            
+            print("Pairs count:", len(trajectory))
             #  construct training data
             payload = []
             for idx, (obs, actions) in enumerate(trajectory):
@@ -184,13 +199,16 @@ def main():
                     "action": [{k: v for k, v in action.bg_action.items() if k != "data_bid"} for action in actions],
                     "video_timestamp": [action.video_timestamp for action in actions],
                     "axtree": obs.bg_axtree,
+                    "html_url": obs.html_url,
                     "raw_data_id": str(document["_id"])
                 }
                 payload.append(data)
             print(len(payload))
-            if len(payload) > 0:
-                print(f"Inserting {len(payload)} processed steps for document ID {document['_id']}")
-                mongo.insert_post_process(payload)
+            # if len(payload) > 0:
+            #     print(f"Inserting {len(payload)} processed steps for document ID {document['_id']}")
+            #     mongo.insert_post_process(payload)
+                
+                
 
     finally:
         # Always close connection when done
