@@ -49,6 +49,8 @@ def combine_and_map_events(event_log):
                 if e['type'] == 'input':
                     last_event = e
                     data += e.get('data','')
+            if (data == ""):
+                continue
             last_event["data"] = data
             actions.append(last_event)
         elif tagName == "select":
@@ -64,6 +66,7 @@ def combine_and_map_events(event_log):
                     break
             if last_event:
                 actions.append(last_event)
+    return actions
     
     
     
@@ -83,6 +86,11 @@ def combine_input_events(event_log):
     return new_event_log           
 
 def pair_event_obs(events, observations):
+    print("Pairing", len(events), "events with", len(observations), "observations")
+    # for e in events:
+    #     print("Type: ", e["type"], " bid: ", e["target"]["bid"], " tag: ", e["target"]["tag"].lower(), " value: ", e["target"].get("value"), " data: ", e.get("data"), " Timestamp:", e["timestamp"])
+    # for o in observations:
+    #     print("Obs Timestamp:", o["timestamp"], " URL:", o.get("html_file_url", "N/A"))
     ans = []
     i = j = 0
     while i < len(events) and j < len(observations):
@@ -119,7 +127,6 @@ def postprocess_document(document):
     # reduce event log to key events only
     event_log = combine_and_map_events(event_log)
     # event_log = combine_input_events(event_log)
-    
     # map events to actions
     pairs = []
     result = pair_event_obs(event_log, html_log)
@@ -127,8 +134,7 @@ def postprocess_document(document):
     for obs, event in result:
         action = event_to_action(event)
         if not action:
-            # print("No action for event:", obs["timestamp"], event["timestamp"])
-            # print(event["type"])
+            print("No action for event:", obs["timestamp"], event["timestamp"])
             continue
         if not isinstance(action, list):
             action = [action]
@@ -150,14 +156,13 @@ def main():
     documents = []
     
     try:
-        # documents = mongo.get_latest()
+        documents = mongo.get_latest()
         # processed = mongo.get_post_process_by_taskid(documents["_id"])
         # if (processed):
         #     print("Already processed")
         #     return
         # process all events
-        with open('data2.json', 'r') as f:
-            documents = [json.load(f)]
+
         for document in documents: 
             trajectory = postprocess_document(document)
             
@@ -182,6 +187,7 @@ def main():
                     "raw_data_id": str(document["_id"])
                 }
                 payload.append(data)
+            print(len(payload))
             if len(payload) > 0:
                 print(f"Inserting {len(payload)} processed steps for document ID {document['_id']}")
                 mongo.insert_post_process(payload)

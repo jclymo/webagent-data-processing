@@ -1,0 +1,77 @@
+Type,event,element(bid),tagName,role,name,timeStamp
+E,pointerdown,185,span,list,All,{'$numberLong': '1764620009031'}
+O,pointerdown,,,,,{'$numberLong': '1764620009093'}
+E,selectstart,185,span,list,All,{'$numberLong': '1764620009101'}
+E,click,185,span,list,All,{'$numberLong': '1764620009132'}
+E,pointerdown,48,a,button,Show / hide filter,{'$numberLong': '1764620010756'}
+E,click,48,a,button,Show / hide filter,{'$numberLong': '1764620010888'}
+E,pointerdown,1186,span,,-- choose field --,{'$numberLong': '1764620012765'}
+O,pointerdown,,,,,{'$numberLong': '1764620012817'}
+E,pointerdown,1521,div,option,Model,{'$numberLong': '1764620018267'}
+O,pointerdown,,,,,{'$numberLong': '1764620018320'}
+E,pointerdown,1717,input,textbox,Model,{'$numberLong': '1764620019450'}
+E,click,1717,input,combobox,Model,{'$numberLong': '1764620019667'}
+E,pointerdown,1325,button,button,Add AND Condition To Condition 1: Model is ,{'$numberLong': '1764620020325'}
+E,click,1325,button,button,Add AND Condition To Condition 1: Model is ,{'$numberLong': '1764620020415'}
+E,pointerdown,1734,span,,-- choose field --,{'$numberLong': '1764620021464'}
+O,pointerdown,,,,,{'$numberLong': '1764620021503'}
+E,pointerdown,1908,div,option,Assigned to,{'$numberLong': '1764620023842'}
+E,pointerdown,1873,button,button,Add AND Condition To Condition 2: Assigned to is ,{'$numberLong': '1764620025059'}
+O,pointerdown,,,,,{'$numberLong': '1764620025099'}
+E,click,1873,button,button,Add AND Condition To Condition 2: Assigned to is ,{'$numberLong': '1764620025169'}
+E,pointerdown,2280,span,,-- choose field --,{'$numberLong': '1764620028751'}
+O,pointerdown,,,,,{'$numberLong': '1764620028795'}
+E,pointerdown,2718,div,option,Short description,{'$numberLong': '1764620033393'}
+O,pointerdown,,,,,{'$numberLong': '1764620033441'}
+E,pointerdown,2795,select,combobox,Operator For Condition 3: Short description starts with ,{'$numberLong': '1764620039564'}
+O,pointerdown,,,,,{'$numberLong': '1764620039615'}
+E,click,2795,select,combobox,Operator For Condition 3: Short description starts with ,{'$numberLong': '1764620039629'}
+E,input,2795,select,combobox,Operator For Condition 3: Short description starts with ,{'$numberLong': '1764620040966'}
+E,change,2795,select,combobox,Operator For Condition 3: Short description starts with ,{'$numberLong': '1764620040966'}
+E,click,2795,select,combobox,Operator For Condition 3: Short description is ,{'$numberLong': '1764620040968'}
+E,pointerdown,aria-short-description,input,textbox,Short description,{'$numberLong': '1764620041417'}
+E,click,2816,input,textbox,Short description,{'$numberLong': '1764620041505'}
+E,input,2816,input,textbox,Short description,{'$numberLong': '1764620042237'}
+E,pointerdown,2419,button,button,Add AND Condition To Condition 3: Short description is ,{'$numberLong': '1764620043084'}
+O,pointerdown,,,,,{'$numberLong': '1764620043142'}
+E,change,2816,input,textbox,Short description,{'$numberLong': '1764620043151'}
+E,click,2419,button,button,Add AND Condition To Condition 3: Short description is ,{'$numberLong': '1764620043171'}
+E,pointerdown,2827,a,button,-- choose field --,{'$numberLong': '1764620047493'}
+O,pointerdown,,,,,{'$numberLong': '1764620047545'}
+E,pointerdown,3170,div,option,Number,{'$numberLong': '1764620052612'}
+O,pointerdown,,,,,{'$numberLong': '1764620052667'}
+E,pointerdown,3346,select,combobox,Operator For Condition 4: Number starts with ,{'$numberLong': '1764620053740'}
+E,click,3346,select,combobox,Operator For Condition 4: Number starts with ,{'$numberLong': '1764620053747'}
+E,input,3346,select,combobox,Operator For Condition 4: Number starts with ,{'$numberLong': '1764620054892'}
+E,change,3346,select,combobox,Operator For Condition 4: Number starts with ,{'$numberLong': '1764620054893'}
+E,click,3346,select,combobox,Operator For Condition 4: Number is ,{'$numberLong': '1764620054894'}
+E,pointerdown,aria-number,input,textbox,Number,{'$numberLong': '1764620055194'}
+E,click,aria-number,input,textbox,Number,{'$numberLong': '1764620055261'}
+E,input,3367,input,textbox,Number,{'$numberLong': '1764620056213'}
+O,input,,,,,{'$numberLong': '1764620056261'}
+E,input,3367,input,textbox,Number,{'$numberLong': '1764620056397'}
+E,input,3367,input,textbox,Number,{'$numberLong': '1764620056625'}
+E,input,3367,input,textbox,Number,{'$numberLong': '1764620057692'}
+E,input,3367,input,textbox,Number,{'$numberLong': '1764620057872'}
+E,input,3367,input,textbox,Number,{'$numberLong': '1764620058059'}
+E,input,3367,input,textbox,Number,{'$numberLong': '1764620058266'}
+E,input,3367,input,textbox,Number,{'$numberLong': '1764620058435'}
+E,change,3367,input,textbox,Number,{'$numberLong': '1764620059875'}
+O,change,,,,,{'$numberLong': '1764620059921'}
+E,input,3367,input,textbox,Number,{'$numberLong': '1764620061324'}
+E,input,3367,input,textbox,Number,{'$numberLong': '1764620061783'}
+E,pointerdown,2967,button,button,Add AND Condition To Condition 4: Number is CHG0000035,{'$numberLong': '1764620062376'}
+E,change,3367,input,textbox,Number,{'$numberLong': '1764620062376'}
+E,click,2967,button,button,Add AND Condition To Condition 4: Number is CHG0000035,{'$numberLong': '1764620062459'}
+E,pointerdown,role-button,a,button,-- choose field --,{'$numberLong': '1764620063241'}
+O,pointerdown,,,,,{'$numberLong': '1764620063291'}
+E,pointerdown,3796,div,option,Risk,{'$numberLong': '1764620068703'}
+O,pointerdown,,,,,{'$numberLong': '1764620068766'}
+E,pointerdown,3912,select,combobox,Choose option for field: Risk,{'$numberLong': '1764620069947'}
+E,click,3912,select,combobox,Choose option for field: Risk,{'$numberLong': '1764620069952'}
+E,input,3912,select,combobox,Choose option for field: Risk,{'$numberLong': '1764620071235'}
+E,change,3912,select,combobox,Choose option for field: Risk,{'$numberLong': '1764620071235'}
+E,click,3912,select,combobox,Choose option for field: Risk,{'$numberLong': '1764620071235'}
+E,pointerdown,1120,button,button,Run filter,{'$numberLong': '1764620073382'}
+O,pointerdown,,,,,{'$numberLong': '1764620073457'}
+E,click,1120,button,button,Run filter,{'$numberLong': '1764620073481'}

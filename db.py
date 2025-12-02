@@ -1,5 +1,5 @@
 import os
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 from typing import Dict, Any, Optional, List
 from dotenv import load_dotenv
 
@@ -37,7 +37,14 @@ class MongoDB:
     
     def get_latest(self) -> Optional[Dict[str, Any]]:
         collection = self.db[self.event_collection]
-        return collection.find_one(sort=[("order", -1)])
+        # x = collection.find().sort("timestamp", DESCENDING).limit(1)
+        # print(x[0])
+        return [collection.find_one({"duration":77, "events_recorded":76})]
+        # latest = collection.find_one(
+        #     sort=[("timestamp", -1)]   # descending = latest first
+        # )
+        # return [latest]
+        # return collection.find().sort("timestamp", DESCENDING).limit(1)
     
     def get_post_process_by_taskid(self, raw_id: str) -> Optional[Dict[str, Any]]:
         collection = self.db[self.post_process_collection]

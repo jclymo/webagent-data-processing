@@ -24,19 +24,25 @@ def get_target_type(target_html):
     return "aria combobox"
 
 def event_to_action(event):
-    if event["type"] == "click":
-        target_html = event["target"]["outerHTMLSnippet"].lower()
-        target_type = get_target_type(target_html)
-        if target_type == "dropdown":
-            return SelectOption(event)
-        if target_type == "aria combobox":
-            return [Press(event), Click(event)]
-        return Click(event)
-        
-    if event["type"] == "submit":
-        return Click(event)
-    if event["type"] == "input":
+    if event["target"]["tag"] == "SELECT":
+        return SelectOption(event)
+    elif event["target"]["tag"] == "INPUT":
         return Fill(event)
+    else:
+        return Click(event)
+    # if event["type"] == "click":
+    #     target_html = event["target"]["outerHTMLSnippet"].lower()
+    #     target_type = get_target_type(target_html)
+    #     if target_type == "dropdown":
+    #         return SelectOption(event)
+    #     if target_type == "aria combobox":
+    #         return [Press(event), Click(event)]
+    #     return Click(event)
+        
+    # if event["type"] == "submit":
+    #     return Click(event)
+    # if event["type"] == "input":
+    #     return Fill(event)
 
 class Action:
     def __init__(self, event):
@@ -55,10 +61,10 @@ class Action:
 class Fill(Action):
     def __init__(self, event):
         super().__init__(event)
-        self._set_text()
+        self._set_value()
     
-    def _set_text(self):
-        self.text = self.event["data"]
+    def _set_value(self):
+        self.value = self.event["target"]["value"]
 
     def _set_time(self):
         super()._set_time()
@@ -70,7 +76,7 @@ class Fill(Action):
         return {
             "action": "fill",
             "data_bid": self.data_bid,
-            "text": self.text
+            "value": self.value
         }
         # return f"fill(data_bid='{self.data_bid}', text='{self.text}')"
 
