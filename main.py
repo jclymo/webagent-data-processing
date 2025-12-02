@@ -20,6 +20,53 @@ def split_observation_and_event_logs(full_log):
             event_log.append(entry)
     return html_log, event_log
 
+def combine_and_map_events(event_log):
+    prev_bids = []
+    bid_events = {}
+    bid_history = []
+    for event in event_log:
+        bid = event["target"]["bid"]
+        if bid not in bid_history:
+            bid_history.append(bid)
+        if bid not in prev_bids:
+            prev_bids.append(bid)
+            bid_events[bid] = [event]
+        else:
+            bid_events[bid].append(event)
+        
+        if len(prev_bids)>2:
+            prev_bids.pop(0)
+    
+    actions = []
+    for bid in bid_history:
+        events = bid_events.get(bid)
+        if events is None:
+            continue
+        tagName = events[0]["target"].get("tag","").lower()
+        if tagName == "input":
+            data = ""
+            for e in events:
+                if e['type'] == 'input':
+                    last_event = e
+                    data += e.get('data','')
+            last_event["data"] = data
+            actions.append(last_event)
+        elif tagName == "select":
+            for i in range(len(events) - 1, -1, -1):
+                if events[i]["type"] == "click":
+                    actions.append(events[i])
+                    break
+        else:
+            last_event = None
+            for i in range(len(events) - 1, -1, -1):
+                if events[i]['type'] in ['click', 'submit', 'pointerdown']:
+                    last_event = events[i]
+                    break
+            if last_event:
+                actions.append(last_event)
+    
+    
+    
 def combine_input_events(event_log):
     new_event_log = []
     start_of_sequence = 0
@@ -70,7 +117,8 @@ def postprocess_document(document):
     event_log.sort(key = lambda x: x["timestamp"])
 
     # reduce event log to key events only
-    event_log = combine_input_events(event_log)
+    event_log = combine_and_map_events(event_log)
+    # event_log = combine_input_events(event_log)
     
     # map events to actions
     pairs = []
@@ -102,12 +150,14 @@ def main():
     documents = []
     
     try:
-        documents = mongo.get_latest()
+        # documents = mongo.get_latest()
         # processed = mongo.get_post_process_by_taskid(documents["_id"])
         # if (processed):
         #     print("Already processed")
         #     return
         # process all events
+        with open('data2.json', 'r') as f:
+            documents = [json.load(f)]
         for document in documents: 
             trajectory = postprocess_document(document)
             
