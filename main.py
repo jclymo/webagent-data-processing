@@ -172,11 +172,6 @@ def main():
     
     try:
         documents = mongo.get_latest()
-        # processed = mongo.get_post_process_by_taskid(documents["_id"])
-        # if (processed):
-        #     print("Already processed")
-        #     return
-        # process all events
 
         for document in documents: 
             trajectory = postprocess_document(document)
@@ -204,9 +199,9 @@ def main():
                 }
                 payload.append(data)
             print(len(payload))
-            # if len(payload) > 0:
-            #     print(f"Inserting {len(payload)} processed steps for document ID {document['_id']}")
-            #     mongo.insert_post_process(payload)
+            if len(payload) > 0:
+                print(f"Inserting {len(payload)} processed steps for document ID {document['_id']}")
+                mongo.insert_post_process(payload)
                 
                 
 
